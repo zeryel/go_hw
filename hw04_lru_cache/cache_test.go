@@ -13,11 +13,13 @@ func TestCache(t *testing.T) {
 	t.Run("empty cache", func(t *testing.T) {
 		c := NewCache(10)
 
-		_, ok := c.Get("aaa")
+		elem, ok := c.Get("aaa")
 		require.False(t, ok)
+		require.Nil(t, elem)
 
-		_, ok = c.Get("bbb")
+		elem, ok = c.Get("bbb")
 		require.False(t, ok)
+		require.Nil(t, elem)
 	})
 
 	t.Run("simple", func(t *testing.T) {
@@ -49,8 +51,52 @@ func TestCache(t *testing.T) {
 		require.Nil(t, val)
 	})
 
+	t.Run("вытесняем элемент при переполнении кэша", func(t *testing.T) {
+		c := NewCache(2)
+
+		c.Set("a", 1)
+		c.Set("b", 2)
+		c.Set("c", 3)
+
+		val, ok := c.Get("a")
+		require.Nil(t, val)
+		require.False(t, ok)
+	})
+
 	t.Run("purge logic", func(t *testing.T) {
-		// Write me
+		c := NewCache(10)
+
+		c.Set("a", 1)
+		c.Set("b", 2)
+		c.Set("c", 3)
+
+		c.Clear()
+
+		_, ok := c.Get("a")
+		require.False(t, ok)
+		_, ok = c.Get("b")
+		require.False(t, ok)
+		_, ok = c.Get("c")
+		require.False(t, ok)
+	})
+
+	t.Run("перетасовка кэша", func(t *testing.T) {
+		c := NewCache(3)
+
+		c.Set("a", 1)
+		c.Set("b", 2)
+		c.Set("c", 3)
+
+		c.Get("a")
+		c.Get("b")
+		c.Set("a", 4)
+		c.Set("d", 5)
+
+		val, ok := c.Get("c")
+		require.False(t, ok)
+		val, ok = c.Get("a")
+		require.True(t, ok)
+		require.Equal(t, 4, val)
 	})
 }
 
