@@ -15,7 +15,7 @@ func Unpack(encodedString string) (string, error) {
 
 	runeParts := []rune(encodedString)
 
-	for i := 0; i < len(encodedString); i++ {
+	for i := 0; i < len(runeParts); i++ {
 		switch {
 		case unicode.IsDigit(runeParts[i]):
 			if lastRune == -1 {
