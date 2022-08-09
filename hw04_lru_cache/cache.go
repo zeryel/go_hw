@@ -49,12 +49,14 @@ func (cache *lruCache) Set(key Key, value interface{}) bool {
 
 func (cache *lruCache) Get(key Key) (interface{}, bool) {
 	var item *ListItem
-	var value interface{} = nil
+	var value interface{}
 	var isFound bool
 
 	if item, isFound = cache.items[key]; isFound {
 		value = item.Value
 		cache.queue.MoveToFront(item)
+	} else {
+		value = nil
 	}
 
 	return value, isFound
