@@ -19,9 +19,9 @@ func Top10(originalText string) []string {
 	sort.Slice(words, func(i, j int) bool {
 		if countedWords[words[i]] == countedWords[words[j]] {
 			return words[i] < words[j]
-		} else {
-			return countedWords[words[i]] > countedWords[words[j]]
 		}
+
+		return countedWords[words[i]] > countedWords[words[j]]
 	})
 
 	return words[0:10]
@@ -39,7 +39,7 @@ func countWords(words []string) (map[string]int, []string) {
 		}
 
 		if _, exist := result[word]; exist {
-			result[word] = result[word] + 1
+			result[word]++
 		} else {
 			result[word] = 1
 			newWordsSlice = append(newWordsSlice, word)
