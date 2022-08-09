@@ -81,6 +81,8 @@ func TestCache(t *testing.T) {
 	})
 
 	t.Run("перетасовка кэша", func(t *testing.T) {
+		var val interface{}
+
 		c := NewCache(3)
 
 		c.Set("a", 1)
@@ -92,7 +94,7 @@ func TestCache(t *testing.T) {
 		c.Set("a", 4)
 		c.Set("d", 5)
 
-		val, ok := c.Get("c")
+		_, ok := c.Get("c")
 		require.False(t, ok)
 		val, ok = c.Get("a")
 		require.True(t, ok)
