@@ -15,16 +15,15 @@ var (
 
 func Copy(fromPath, toPath string, offset, limit int64) error {
 	fromFileInfo, err := os.Stat(fromPath)
-	if nil != err {
+	switch {
+	case err != nil:
 		return err
-	}
-
-	if !fromFileInfo.Mode().IsRegular() {
+	case !fromFileInfo.Mode().IsRegular():
 		return ErrUnsupportedFile
-	}
-
-	if offset > fromFileInfo.Size() {
+	case offset > fromFileInfo.Size():
 		return ErrOffsetExceedsFileSize
+	case limit == 0 || limit > fromFileInfo.Size():
+		limit = fromFileInfo.Size()
 	}
 
 	fromFile, err := os.Open(fromPath)
@@ -41,15 +40,14 @@ func Copy(fromPath, toPath string, offset, limit int64) error {
 
 	defer toFile.Close()
 
-	if 0 == limit || limit > fromFileInfo.Size() {
-		limit = fromFileInfo.Size()
-	}
-
 	_, err = fromFile.Seek(offset, 0)
 	if err != nil {
 		return err
 	}
 
+	if limit+offset > fromFileInfo.Size() {
+		limit = fromFileInfo.Size() - offset
+	}
 	progressBar := pb.New(int(limit))
 	_, err = io.CopyN(toFile, progressBar.NewProxyReader(fromFile), limit)
 	if err != nil {

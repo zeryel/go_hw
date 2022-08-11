@@ -22,6 +22,6 @@ func main() {
 
 	err := Copy(from, to, offset, limit)
 	if nil != err {
-		fmt.Errorf("%s", err)
+		fmt.Println(fmt.Errorf("%w", err))
 	}
 }
